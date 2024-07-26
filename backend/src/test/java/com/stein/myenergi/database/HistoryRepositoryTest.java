@@ -1,7 +1,6 @@
 package com.stein.myenergi.database;
 
 import com.stein.myenergi.database.entities.HistoryEntity;
-import com.stein.myenergi.database.entities.HistoryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

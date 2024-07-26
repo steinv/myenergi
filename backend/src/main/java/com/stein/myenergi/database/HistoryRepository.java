@@ -1,19 +1,16 @@
 package com.stein.myenergi.database;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.stein.myenergi.database.entities.HistoryEntity;
-import com.stein.myenergi.database.entities.HistoryId;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+@Service
+public class HistoryRepository {
 
-@Repository
-public interface HistoryRepository extends CrudRepository<HistoryEntity, HistoryId> {
-
-    @Query("SELECT h FROM history h WHERE (h.id.serial = :serial AND h.id.date >= :start AND h.id.date <= :end) ORDER BY h.id.date")
-    Optional<Collection<HistoryEntity>> findByPeriod(@Param("serial") String serial, @Param("start") Date start, @Param("end")Date end);
+    public void save(HistoryEntity historyEntity) {
+        FirebaseDatabase.getInstance()
+                .getReference(String.format("/history/%s/", historyEntity.getSerial()))
+                .push()
+                .setValueAsync(historyEntity);
+    }
 }

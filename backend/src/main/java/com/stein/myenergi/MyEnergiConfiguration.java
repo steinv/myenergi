@@ -1,18 +1,18 @@
 package com.stein.myenergi;
 
 import com.stein.myenergi.transformers.HistoryModelMapper;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.auth.DigestScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.BasicHttpContext;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.DigestScheme;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -52,8 +52,7 @@ public class MyEnergiConfiguration {
         final String hostUri = "https://s18.myenergi.net/";
         HttpHost host = new HttpHost(hostUri);
         CloseableHttpClient client =
-                HttpClientBuilder
-                        .create()
+                HttpClients.custom()
                         .setDefaultCredentialsProvider(provider())
                         .useSystemProperties()
                         .build();
@@ -78,9 +77,9 @@ public class MyEnergiConfiguration {
     }
 
     private CredentialsProvider provider() {
-        CredentialsProvider provider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(hubSerial, password);
-        provider.setCredentials(AuthScope.ANY, credentials);
+        BasicCredentialsProvider provider = new BasicCredentialsProvider();
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(hubSerial, password.toCharArray());
+        provider.setCredentials(new AuthScope(null, -1), credentials);
         return provider;
     }
 }
