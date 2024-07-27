@@ -26,9 +26,6 @@ public class HistoryEntity implements Serializable {
     // electricity in joules consumed
     private int consumed;
 
-    // original data from api
-    private HistoryDay[] history;
-
     public HistoryEntity() {
     }
 
@@ -86,13 +83,5 @@ public class HistoryEntity implements Serializable {
 
     public void setConsumed(int consumed) {
         this.consumed = consumed;
-    }
-
-    public HistoryDay[] getHistory() {
-        return history;
-    }
-
-    public void setHistory(HistoryDay[] history) {
-        this.history = history;
     }
 }

@@ -33,8 +33,6 @@ public class HistoryModelMapper implements Converter<HistoryDay[], HistoryEntity
 
         // consumed = generated + imported - exported
         destination.setConsumed(temp[0] + temp[2] - temp[1]);
-        // keep the original data too in the entity, not just the aggregation
-        destination.setHistory(source);
 
         return destination;
     }
