@@ -1,13 +1,3 @@
-spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driverClassName: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-    hibernate.ddl-auto: update
-
 management:
   endpoint:
     health:
@@ -19,5 +9,3 @@ server:
 myenergi:
   hub.serial: ${MYENERGI_HUB_SERIAL}
   password: ${MYENERGI_PASSWORD}
-
-logging.level.com.zaxxer.hikari: DEBUG

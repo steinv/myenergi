@@ -1,18 +1,18 @@
 package com.stein.myenergi;
 
-import com.stein.myenergi.transformers.HistoryModelMapper;
-import org.apache.hc.client5.http.auth.AuthCache;
+import static org.modelmapper.config.Configuration.AccessLevel.PACKAGE_PRIVATE;
+
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.CredentialsProvider;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.auth.DigestScheme;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.protocol.BasicHttpContext;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -21,9 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
-
-import static org.modelmapper.config.Configuration.AccessLevel.PACKAGE_PRIVATE;
+import com.stein.myenergi.transformers.HistoryModelMapper;
 
 @Configuration
 public class MyEnergiConfiguration {
@@ -33,7 +31,6 @@ public class MyEnergiConfiguration {
 
     @Value("${myenergi.password}")
     private String password;
-
 
     @Bean
     public ModelMapper modelMapper() {
@@ -47,32 +44,38 @@ public class MyEnergiConfiguration {
 
     @Bean
     public RestTemplate myEnergiRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-        // old hostUri before cloud migration uses the hubserial's last digit
-        // final String hostUri = String.format("https://s%s.myenergi.net/", hubSerial.substring(hubSerial.length() - 1));
-        final String hostUri = "https://s18.myenergi.net/";
-        HttpHost host = new HttpHost(hostUri);
-        CloseableHttpClient client =
-                HttpClients.custom()
-                        .setDefaultCredentialsProvider(provider())
-                        .useSystemProperties()
-                        .build();
+        // Connect timeout
+        ConnectionConfig connectionConfig = ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofSeconds(30))
+                .build();
 
-        final HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(client);
+        // Socket timeout
+        SocketConfig socketConfig = SocketConfig.custom()
+                .setSoTimeout(Timeout.ofSeconds(30))
+                .build();
+
+        // Connection request timeout
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.ofMinutes(3))
+                .build();
+
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setDefaultSocketConfig(socketConfig);
+        connectionManager.setDefaultConnectionConfig(connectionConfig);
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig)
+                .setDefaultCredentialsProvider(provider())
+                .useSystemProperties()
+                .build();
+
+        // old hostUri before cloud migration uses the hubserial's last digit
+        // final String hostUri = String.format("https://s%s.myenergi.net/",
+        // hubSerial.substring(hubSerial.length() - 1));
         return restTemplateBuilder
-                .requestFactory(() -> {
-                    requestFactory.setHttpContextFactory(((httpMethod, uri) -> {
-                        AuthCache authCache = new BasicAuthCache();
-                        DigestScheme digestAuth = new DigestScheme();
-                        authCache.put(host, digestAuth);
-                        BasicHttpContext localcontext = new BasicHttpContext();
-                        localcontext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
-                        return localcontext;
-                    }));
-                    return requestFactory;
-                })
-                .rootUri(hostUri)
-                .setConnectTimeout(Duration.ofSeconds(30))
-                .setReadTimeout(Duration.ofMinutes(3)) // looks like we get a 524 after 100 secs
+                .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
+                .rootUri("https://s18.myenergi.net/")
                 .build();
     }
 

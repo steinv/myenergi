@@ -67,7 +67,7 @@ class ScheduledTasksTest {
         this.scheduledTasks.persistHistoricZappiData();
 
         verify(historyRepository, times(1)).save(argThat(r -> {
-                    assertThat(r.getId().getSerial()).isEqualTo(DUMMY_ZAPPI.getSerialNumber());
+                    assertThat(r.getSerial()).isEqualTo(DUMMY_ZAPPI.getSerialNumber());
                     assertThat(r.getExported()).isEqualTo(4000);
                     assertThat(r.getCharged()).isEqualTo(10000);
                     assertThat(r.getImported()).isEqualTo(5000);
