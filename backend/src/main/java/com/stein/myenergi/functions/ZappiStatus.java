@@ -6,10 +6,14 @@ import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
 import com.stein.myenergi.api.dto.Zappi;
 import com.stein.myenergi.service.MyEnergiApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+// TODO https://www.baeldung.com/spring-cloud-function
+@Component
 public class ZappiStatus implements HttpFunction {
 
     private final MyEnergiApiService apiService;

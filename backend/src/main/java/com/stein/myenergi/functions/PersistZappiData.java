@@ -6,6 +6,7 @@ import com.google.cloud.functions.HttpResponse;
 import com.stein.myenergi.service.MyEnergiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
+// TODO https://www.baeldung.com/spring-cloud-function
+@Component
 public class PersistZappiData implements HttpFunction {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
