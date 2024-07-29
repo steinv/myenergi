@@ -1,30 +1,39 @@
 package com.stein.myenergi.service;
 
+import java.util.Date;
+
+import org.modelmapper.ModelMapper;
+
+import com.stein.myenergi.MyEnergiConfiguration;
 import com.stein.myenergi.api.dto.HistoryDay;
 import com.stein.myenergi.database.HistoryRepository;
 import com.stein.myenergi.database.entities.HistoryEntity;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-
-@Service
 public class MyEnergiService {
 
     private final ModelMapper modelMapper;
     private final MyEnergiApiService apiService;
     private final HistoryRepository historyRepository;
 
-    public MyEnergiService(ModelMapper modelMapper, MyEnergiApiService apiService, HistoryRepository historyRepository) {
-        this.modelMapper = modelMapper;
-        this.apiService = apiService;
-        this.historyRepository = historyRepository;
+    private static MyEnergiService INSTANCE;
+
+    public static MyEnergiService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new MyEnergiService();
+        }
+
+        return INSTANCE;
+    }
+    
+    private MyEnergiService() {
+        this.modelMapper = MyEnergiConfiguration.getModelMapper();
+        this.apiService = MyEnergiApiService.getInstance();
+        this.historyRepository = HistoryRepository.getInstance();
     }
 
     /**
      * Persist Historical data for a zappi serial on a certain point in time;
+     * 
      * @param zappiSerial
      * @param date
      */
