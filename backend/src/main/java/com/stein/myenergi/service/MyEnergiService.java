@@ -2,6 +2,7 @@ package com.stein.myenergi.service;
 
 import java.util.Date;
 
+import com.google.firebase.FirebaseApp;
 import org.modelmapper.ModelMapper;
 
 import com.stein.myenergi.MyEnergiConfiguration;

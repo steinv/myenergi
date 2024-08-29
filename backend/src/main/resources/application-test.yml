@@ -1,9 +1,0 @@
-logging:
-  level:
-    root: INFO
-    web: TRACE
-    org.springframework.web: TRACE
-
-myenergi:
-  hub.serial: 1111111111
-  password: password
