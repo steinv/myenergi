@@ -10,7 +10,7 @@ export interface ConfigurationInterface {
 
 
 @Injectable()
-export class Configuration {
+export class Configuraion {
 
     public url: string = '';
     public zappi: string = '';

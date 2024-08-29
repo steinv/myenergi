@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { map, take } from 'rxjs';
-import { MyenergiService, HistoryCall, DayCall } from './myenergi.service';
+import {MyenergiService, HistoryEntity} from './myenergi.service';
 
 @Component({
   selector: 'app-root',
@@ -51,8 +51,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private mapDataToCsv(data: HistoryCall): string {
-    const csvData = data.days.map(row => Object.values({
+  private mapDataToCsv(data: HistoryEntity[]): string {
+    const csvData = data.map(row => Object.values({
       date: this.datePipe.transform(row.date, 'dd/MM/yyyy'),
       serial: row.serial,
       generated: `=(${row.generated} / 3600000)`,

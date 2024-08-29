@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges
 import { ChartType, ChartOptions, ChartDataset } from 'chart.js';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { DayCall, MyenergiService } from '../myenergi.service';
+import { HistoryEntity, MyenergiService } from '../myenergi.service';
 
 @Component({
   selector: 'app-chart',
@@ -33,7 +33,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     label: 'EV charged',
     backgroundColor: '#36A2EB',
     pointBackgroundColor: '#36A2EB'
-  };         
+  };
   private solarPanels: ChartDataset = {
     data: [],
     label: 'solar-panels',
@@ -62,7 +62,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   public chartLegend = true;
   public chartPlugins = [];
   public chartDataset: ChartDataset[] = [this.consumed, this.evCharged, this.solarPanels, this.exported, this.imported];
-  
+
   public constructor(
     private readonly _changeDetector: ChangeDetectorRef,
     private readonly _service: MyenergiService,
@@ -108,7 +108,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   private getChartForRange(start: Date, end: Date): Observable<void> {
     return this._service.getHistoryInRage(start, end).pipe(
       tap(() => this.resetData()),
-      map(history => this.populateData(history.days))
+      map(history => this.populateData(history))
     );
   }
 
@@ -123,7 +123,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /** populate data sets with received information */
-  private populateData(days: Array<DayCall>) {
+  private populateData(days: HistoryEntity[]) {
     days.map(r => {
       this.chartLabels.push(this._datePipe.transform(new Date(r.date), 'dd/MM/yyyy')!);
       this.consumed.data?.push(r.consumed / 3600000);

@@ -1,20 +1,16 @@
-import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
-import { Configuration } from './configuration';
+import {DatePipe} from '@angular/common';
+import {Database, objectVal, listVal, ref, query, orderByChild, startAt, endAt} from '@angular/fire/database';
+import {Inject, Injectable} from '@angular/core';
+import {Observable, ReplaySubject} from 'rxjs';
+import {take, tap} from 'rxjs/operators';
+import {ZAPPI_SERIAL} from "./app.module";
 
-export interface TODO {
-
+export interface StatusCall {
+  // TODO
 }
 
-export interface HistoryCall {
-  days: Array<DayCall>;
-}
-
-export interface DayCall {
-  date: string;
+export interface HistoryEntity {
+  date: number;
   serial: string;
   generated: number;
   imported: number;
@@ -26,46 +22,34 @@ export interface DayCall {
 @Injectable()
 export class MyenergiService {
 
-  private latest$ = new ReplaySubject<HistoryCall>(1);
+  private latest$ = new ReplaySubject<HistoryEntity[]>(1);
   public latestData = this.latest$.asObservable();
 
   constructor(
-    private readonly _httpClient: HttpClient,
-    private readonly _config: Configuration,
+    private readonly database: Database,
     private readonly _datePipe: DatePipe,
-  ) { }
-
-  public getStatus(): Observable<TODO> {
-    return this.doCall<TODO>('/zappi');
+    @Inject(ZAPPI_SERIAL) private readonly zappiSerial: string
+  ) {
   }
 
-  public getStatusZappi(serial?: string): Observable<TODO> {
-    const zappiSerial = serial || this._config.zappi;
-    return this.doCall<TODO>('/zappi/' + zappiSerial);
+  public getHistoryOnDate(date: Date, serial?: string): Observable<HistoryEntity> {
+    const zappiSerial = serial || this.zappiSerial;
+    return objectVal<HistoryEntity>(
+      ref(this.database, `/history/${zappiSerial}/${this._datePipe.transform(date, 'yyyy-MM-dd')}`)
+    ).pipe(
+      tap(data => this.latest$.next([data]))
+    );
   }
 
-  public getHistoryOnDate(date: Date, serial?: string): Observable<DayCall> {
-    const zappiSerial = serial || this._config.zappi;
-    return this.doCall<DayCall>('/zappi/' + zappiSerial + "/" + this._datePipe.transform(date, 'yyyy-MM-dd')).pipe(tap(r => this.latest$.next({days: [r]})));
-  }
-
-  public getHistoryInRage(start: Date, end: Date, serial?: string): Observable<HistoryCall> {
-    const zappiSerial = serial || this._config.zappi;
-    return this.doCall<HistoryCall>('/zappi/' + zappiSerial + "/" + this._datePipe.transform(start, 'yyyy-MM-dd') + "/" + this._datePipe.transform(end, 'yyyy-MM-dd'))
-      .pipe(
-        tap(r => {
-          //r.days.sort((d1, d2) => d1.date.localeCompare(d2.date))
-          this.latest$.next(r)
-        })
-      );
-  }
-
-  public liveView(serial: string, date: Date): Observable<TODO> {
-    const zappiSerial = serial || this._config.zappi;
-    return this.doCall<TODO>('/zappi/' + zappiSerial + "/" + this._datePipe.transform(date, 'yyyy-MM-dd'));
-  }
-
-  private doCall<T>(resource: string) {
-    return this._httpClient.get<T>(this._config.url + resource).pipe(take(1));
+  public getHistoryInRage(start: Date, end: Date, serial?: string): Observable<HistoryEntity[]> {
+    const zappiSerial = serial || this.zappiSerial;
+    return listVal<HistoryEntity>(
+      query(
+        ref(this.database, `/history/${zappiSerial}`),
+        orderByChild('date'), startAt(start.getTime()), endAt(end.getTime())
+      )
+    ).pipe(
+      tap(data => this.latest$.next(data))
+    );
   }
 }
