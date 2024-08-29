@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ChartType, ChartOptions, ChartDataset } from 'chart.js';
 import { Observable, ReplaySubject } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DayCall, MyenergiService } from '../myenergi.service';
 
 @Component({
@@ -71,7 +71,11 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
 
   public ngOnInit(): void {
     this.updateSubject$.pipe(
-      switchMap(value => this.updateChart(value.start, value.end))
+      switchMap(value => this.updateChart(value.start, value.end)),
+      catchError((error, caught) => {
+        console.error(error);
+        return caught;
+      })
     ).subscribe(
       () => this._changeDetector.markForCheck()
     );
