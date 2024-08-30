@@ -43,12 +43,14 @@ export class MyenergiService {
 
   public getHistoryInRage(start: Date, end: Date, serial?: string): Observable<HistoryEntity[]> {
     const zappiSerial = serial || this.zappiSerial;
+
     return listVal<HistoryEntity>(
       query(
         ref(this.database, `/history/${zappiSerial}`),
         orderByChild('date'), startAt(start.getTime()), endAt(end.getTime())
       )
     ).pipe(
+      tap(data => console.log(data)),
       tap(data => this.latest$.next(data))
     );
   }
