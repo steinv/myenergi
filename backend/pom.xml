@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<!-- Spring Native 0.12.1 only supports Spring Boot 2.7.1 -->
-		<version>2.7.1</version>
-		<relativePath/>
-	</parent>
 	<groupId>com.stein</groupId>
 	<artifactId>myenergi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -16,67 +9,22 @@
 	<description>MyEnergi api</description>
 	<properties>
 		<java.version>11</java.version>
-		<docker-registry>docker.io</docker-registry>
-		<docker-registry-publish>false</docker-registry-publish>
-		<docker-registry-user/>
-		<docker-registry-password/>
-		<docker-image-name>${docker-registry}/${project.artifactId}:${project.version}</docker-image-name>
-		<apache-httpcomponents.version>4.5.13</apache-httpcomponents.version>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<apache-httpcomponents.version>5.3.1</apache-httpcomponents.version>
 		<modelmapper.version>2.4.4</modelmapper.version>
-		<springdoc.version>1.6.9</springdoc.version>
-		<springframework-experimental.version>0.12.1</springframework-experimental.version>
+		<jackson.version>2.9.8</jackson.version>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-native</artifactId>
-			<version>${springframework-experimental.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-native</artifactId>
-			<version>${springdoc.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.retry</groupId>
-			<artifactId>spring-retry</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
 			<version>${apache-httpcomponents.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.modelmapper</groupId>
@@ -84,72 +32,68 @@
 			<version>${modelmapper.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>${springdoc.version}</version>
+			<groupId>com.google.cloud.functions</groupId>
+			<artifactId>functions-framework-api</artifactId>
+			<version>1.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<!-- <scope>runtime</scope> -->
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.3.0</version>
 		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
+			<id>mavencentral</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
+			<id>mavenicm</id>
+			<url>https://maven.icm.edu.pl/artifactory/repo/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
+			<id>mavencentral</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>mavenicm</id>
+			<url>https://maven.icm.edu.pl/artifactory/repo/</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-aot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!--
+                  Google Cloud Functions Framework Maven plugin
+
+                  This plugin allows you to run Cloud Functions Java code
+                  locally. Use the following terminal command to run a
+                  given function locally:
+
+                  mvn function:run -Drun.functionTarget=your.package.yourFunction
+
+				  https://github.com/GoogleCloudPlatform/functions-framework-java/blob/main/function-maven-plugin/src/main/java/com/google/cloud/functions/plugin/DeployFunction.java
+                -->
+				<groupId>com.google.cloud.functions</groupId>
+				<artifactId>function-maven-plugin</artifactId>
+				<version>0.11.0</version>
 				<configuration>
-					<image>
-						<name>${docker-image-name}</name>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<buildpacks>
-							<buildpack>gcr.io/paketo-buildpacks/java-native-image:7.28.0</buildpack>
-						</buildpacks>
-						<publish>${docker-registry-publish}</publish>
-						<env>
-							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-							<BP_JVM_VERSION>11</BP_JVM_VERSION>
-							<BP_NATIVE_IMAGE_BUILD_ARGUMENTS></BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
-						</env>
-					</image>
-					<docker>
-                        <publishRegistry>
-                            <username>${docker-registry-user}</username>
-                            <password>${docker-registry-password}</password>
-                        </publishRegistry>
-                    </docker>
+					<name>myenergi-app-persist-zappi-data</name>
+					<allowUnauthenticated>true</allowUnauthenticated>
+					<projectId>myenergi-app</projectId>
+					<region>europe-west1</region>
+					<runtime>java11</runtime>
+					<!-- EXAMPLE yaml (ensure the firebase_admin_sdk json is in your resources folder)
+					MYENERGI_HUB_SERIAL: "(v)hub sn"
+					MYENERGI_PASSWORD: "api-key"
+					FIREBASE_DATABASE: "https://my-project-id-default-rtdb.europe-west1.firebasedatabase.app"
+					FIREBASE_ADMIN_SDK: "/my-project-id-firebase-adminsdk.json"
+					-->
+					<deploy.envvarsfile>envvars.yaml</deploy.envvarsfile>
+					<functionTarget>com.stein.myenergi.functions.PersistZappiData</functionTarget>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -26,7 +26,6 @@ public class HistoryModelMapper implements Converter<HistoryDay[], HistoryEntity
                     temp[2] += r.getImportedJoules();
                     temp[3] += r.getPhase1JoulesForCharging() + r.getPhase2JoulesForCharging() + r.getPhase3JoulesForCharging();
         });
-
         destination.setGenerated(temp[0]);
         destination.setExported(temp[1]);
         destination.setImported(temp[2]);
@@ -34,9 +33,6 @@ public class HistoryModelMapper implements Converter<HistoryDay[], HistoryEntity
 
         // consumed = generated + imported - exported
         destination.setConsumed(temp[0] + temp[2] - temp[1]);
-
-        // keep the original data too in the entity, not just the aggregation
-        destination.setHistory(source);
 
         return destination;
     }

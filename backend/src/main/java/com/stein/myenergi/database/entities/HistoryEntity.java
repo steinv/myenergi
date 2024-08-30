@@ -3,18 +3,15 @@ package com.stein.myenergi.database.entities;
 import com.stein.myenergi.api.dto.HistoryDay;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
-@Entity(name = "history")
-@Table(name = "history")
 public class HistoryEntity implements Serializable {
 
-    @EmbeddedId
-    private HistoryId id;
-
+    // date in long format
+    private Long date;
+    // zappi serial
+    private String serial;
     // electricity in joules imported from the net
     private int imported;
     // electricity in joules exported to the net
@@ -29,18 +26,23 @@ public class HistoryEntity implements Serializable {
     // electricity in joules consumed
     private int consumed;
 
-    // original data from api
-    private HistoryDay[] history;
-
     public HistoryEntity() {
     }
 
-    public HistoryId getId() {
-        return id;
+    public Long getDate() {
+        return date;
     }
 
-    public void setId(HistoryId id) {
-        this.id = id;
+    public void setDate(Long date) {
+        this.date = date;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
     public int getImported() {
@@ -81,13 +83,5 @@ public class HistoryEntity implements Serializable {
 
     public void setConsumed(int consumed) {
         this.consumed = consumed;
-    }
-
-    public HistoryDay[] getHistory() {
-        return history;
-    }
-
-    public void setHistory(HistoryDay[] history) {
-        this.history = history;
     }
 }

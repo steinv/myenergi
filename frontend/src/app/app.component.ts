@@ -1,22 +1,21 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { map, take } from 'rxjs';
-import { MyenergiService, HistoryCall, DayCall } from './myenergi.service';
+import {MyenergiService, HistoryEntity} from './myenergi.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
-  private now = new Date();
   public maximumDate = new Date(Date.now() - 86400000);
-  public minimumDate = new Date(2021, 0, 1);
+  public minimumDate = new Date(2023, 0, 1);
   public dateRange = new FormGroup({
-    start: new FormControl(this.now),
-    end: new FormControl(this.now)
+    start: new FormControl(this.maximumDate),
+    end: new FormControl(this.maximumDate)
   });
 
   public constructor(
@@ -24,12 +23,8 @@ export class AppComponent implements OnInit {
     private readonly service: MyenergiService
   ) { }
 
-  public ngOnInit(): void {
-    this.dateRange.controls['start'].value;
-  }
-
-  public today(): void {
-    this.dateRange.patchValue({ start: this.now, end: this.now });
+  public yesterday(): void {
+    this.dateRange.patchValue({ start: this.maximumDate, end: this.maximumDate });
   }
 
   public download(): void {
@@ -51,8 +46,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private mapDataToCsv(data: HistoryCall): string {
-    const csvData = data.days.map(row => Object.values({
+  private mapDataToCsv(data: HistoryEntity[]): string {
+    const csvData = data.map(row => Object.values({
       date: this.datePipe.transform(row.date, 'dd/MM/yyyy'),
       serial: row.serial,
       generated: `=(${row.generated} / 3600000)`,

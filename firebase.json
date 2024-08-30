@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "predeploy": "npm ci --prefix frontend && npm run --prefix frontend build",
+    "public": "frontend/dist/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

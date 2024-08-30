@@ -1,19 +1,28 @@
 package com.stein.myenergi.database;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.stein.myenergi.database.entities.HistoryEntity;
-import com.stein.myenergi.database.entities.HistoryId;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.Optional;
 
-@Repository
-public interface HistoryRepository extends CrudRepository<HistoryEntity, HistoryId> {
+import static com.stein.myenergi.functions.PersistZappiData.DATE_FORMAT;
 
-    @Query("SELECT h FROM history h WHERE (h.id.serial = :serial AND h.id.date >= :start AND h.id.date <= :end) ORDER BY h.id.date")
-    Optional<Collection<HistoryEntity>> findByPeriod(@Param("serial") String serial, @Param("start") Date start, @Param("end")Date end);
+public class HistoryRepository {
+
+    private static HistoryRepository INSTANCE;
+
+    public static HistoryRepository getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HistoryRepository();
+        }
+
+        return INSTANCE;
+    }
+    
+    public void save(HistoryEntity historyEntity) {
+        String yyyyMMdd = DATE_FORMAT.format(new Date(historyEntity.getDate()));
+        FirebaseDatabase.getInstance()
+                .getReference(String.format("/history/%s/%s", historyEntity.getSerial(), yyyyMMdd))
+                .setValueAsync(historyEntity);
+    }
 }
